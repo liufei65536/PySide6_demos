@@ -35,6 +35,7 @@ temp/
 # ==========================
 .vscode/
 .idea/
+*/.idea/
 *.iml
 .DS_Store  # macOS 系统文件
 Thumbs.db  # Windows 系统文件
