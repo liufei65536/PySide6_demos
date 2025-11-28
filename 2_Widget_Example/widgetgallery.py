@@ -155,13 +155,14 @@ class WidgetGallery(QDialog):
         disable_widgets_checkbox.toggled.connect(simple_input_widgets_groupbox.setDisabled)
 
         help_shortcut = QShortcut(self)
-        help_shortcut.setKey(QKeySequence.StandardKey.HelpContents)
+        help_shortcut.setKey(QKeySequence.StandardKey.HelpContents) # QKeySequence.StandardKey.HelpContents在windows是F1
         help_shortcut.activated.connect(self.help_on_current_widget)
 
+        # 水平布局
         top_layout = QHBoxLayout()
         top_layout.addWidget(style_label)
         top_layout.addWidget(self._style_combobox)
-        top_layout.addStretch(1)
+        top_layout.addStretch(1) # 添加弹性空间
         top_layout.addWidget(help_label)
         top_layout.addStretch(1)
         top_layout.addWidget(disable_widgets_checkbox)
@@ -172,10 +173,10 @@ class WidgetGallery(QDialog):
         dialog_buttonbox.helpRequested.connect(launch_module_help)
         dialog_buttonbox.rejected.connect(self.reject)
 
-        # 网格布局， GridLayout
-        main_layout = QGridLayout(self)
-        main_layout.addLayout(top_layout, 0, 0, 1, 2)
-        main_layout.addWidget(buttons_groupbox, 1, 0)
+        # 网格布局， GridLayout（顶层布局）
+        main_layout = QGridLayout(self) # 绑定当前小部件的布局
+        main_layout.addLayout(top_layout, 0, 0, 1, 2) # 0行 0列； 占1行，占2列
+        main_layout.addWidget(buttons_groupbox, 1, 0) # 1行 0列
         main_layout.addWidget(simple_input_widgets_groupbox, 1, 1)
         main_layout.addWidget(itemview_tabwidget, 2, 0)
         main_layout.addWidget(text_toolbox, 2, 1)
@@ -304,37 +305,38 @@ class WidgetGallery(QDialog):
         init_widget(result, "bottomLeftTabWidget")
         result.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Ignored)
 
-        tree_view = QTreeView()
+        # QTreeView MVC模式？
+        tree_view = QTreeView() #View
         init_widget(tree_view, "treeView")
-        filesystem_model = QFileSystemModel(tree_view)
-        filesystem_model.setRootPath(QDir.rootPath())
-        tree_view.setModel(filesystem_model)
+        filesystem_model = QFileSystemModel(tree_view) # Model
+        filesystem_model.setRootPath(QDir.rootPath()) # 获取当前系统的根路径
+        tree_view.setModel(filesystem_model) # 为View setModel
 
+        # QTableWidget
         table_widget = QTableWidget()
         init_widget(table_widget, "tableWidget")
         table_widget.setRowCount(10)
         table_widget.setColumnCount(10)
 
+        # QListView
         list_model = QStandardItemModel(0, 1, result)
-
         list_model.appendRow(QStandardItem(QIcon(DIR_OPEN_ICON), "Directory"))
         list_model.appendRow(QStandardItem(QIcon(COMPUTER_ICON), "Computer"))
-
         list_view = QListView()
         init_widget(list_view, "listView")
         list_view.setModel(list_model)
 
+        # QListView
         icon_mode_listview = QListView()
         init_widget(icon_mode_listview, "iconModeListView")
 
-        icon_mode_listview.setViewMode(QListView.ViewMode.IconMode)
+        icon_mode_listview.setViewMode(QListView.ViewMode.IconMode) # 设置显示模式为图标模式（支持拖拽）
         icon_mode_listview.setModel(list_model)
 
         result.addTab(embed_into_hbox_layout(tree_view), "Tree View")
         result.addTab(embed_into_hbox_layout(table_widget), "Table")
         result.addTab(embed_into_hbox_layout(list_view), "List")
-        result.addTab(embed_into_hbox_layout(icon_mode_listview),
-                      "Icon Mode List")
+        result.addTab(embed_into_hbox_layout(icon_mode_listview), "Icon Mode List")
         return result
 
     def create_simple_inputwidgets_groupbox(self):
@@ -405,6 +407,7 @@ class WidgetGallery(QDialog):
     @Slot()
     def help_on_current_widget(self):
         """Display help on widget under mouse"""
+        # 获取鼠标位置所在的小部件
         w = QApplication.widgetAt(QCursor.pos(self.screen()))
         while w:  # Skip over internal widgets
             name = w.objectName()
